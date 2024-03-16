@@ -1,0 +1,103 @@
+mql5
+//+------------------------------------------------------------------+
+//|                                                   SK RandomWalk Monkey EA MT5 |
+//|                                          https://www.forexroboteasy.com |
+//|                                                     Developed by Forex Robot Easy Team |
+//+------------------------------------------------------------------+
+
+// Input parameters
+input double LotSize = 0.01; // Default lot size
+input double StopLoss = 50; // Default stop-loss level in pips
+input double TakeProfit = 100; // Default take-profit level in pips
+
+// Global variables
+double RandomOutput; // Random output for trading strategy
+
+//+------------------------------------------------------------------+
+//| Expert initialization function                                   |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+    // Generate random seed
+    srand(TimeCurrent());
+
+    return(INIT_SUCCEEDED);
+}
+
+//+------------------------------------------------------------------+
+//| Expert deinitialization function                                 |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+{
+    // Perform any necessary cleanup here
+}
+
+//+------------------------------------------------------------------+
+//| Expert tick function                                             |
+//+------------------------------------------------------------------+
+void OnTick()
+{
+    // Generate random output
+    RandomOutput = RandomRange(-1, 1);
+
+    // Check if there is an open position
+    if (PositionSelect() == false)
+    {
+        // Open a new trade based on the random output
+        if (RandomOutput > 0)
+        {
+            // Buy order
+            Buy(LotSize);
+        }
+        else if (RandomOutput < 0)
+        {
+            // Sell order
+            Sell(LotSize);
+        }
+    }
+    else
+    {
+        // Check if the stop-loss or take-profit levels are reached
+        if (PositionGetDouble(POSITION_SL) == 0 && PositionGetDouble(POSITION_TP) == 0)
+        {
+            // Set stop-loss and take-profit levels for the open position
+            double stopLossLevel = Bid - StopLoss * Point;
+            double takeProfitLevel = Ask + TakeProfit * Point;
+
+            PositionSetDouble(POSITION_SL, stopLossLevel);
+            PositionSetDouble(POSITION_TP, takeProfitLevel);
+        }
+    }
+}
+
+//+------------------------------------------------------------------+
+//| Custom functions                                                 |
+//+------------------------------------------------------------------+
+
+// Function to generate random number within a specified range
+double RandomRange(double min, double max)
+{
+    return min + (max - min) * MathRand() / RAND_MAX;
+}
+
+// Function to open a buy order
+void Buy(double lotSize)
+{
+    // Place buy order logic here
+    // ...
+    // ...
+
+    // Print trade details
+    Print('Buy order opened: Lot Size = ', DoubleToStr(lotSize, 2));
+}
+
+// Function to open a sell order
+void Sell(double lotSize)
+{
+    // Place sell order logic here
+    // ...
+    // ...
+
+    // Print trade details
+    Print('Sell order opened: Lot Size = ', DoubleToStr(lotSize, 2));
+}
